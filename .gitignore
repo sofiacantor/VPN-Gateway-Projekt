@@ -1,0 +1,17 @@
+# Vagrant
+.vagrant/
+*.log
+
+# WireGuard nycklar (ALDRIG i Git!)
+*.key
+*.pub
+privatekey
+publickey
+
+# OS-filer
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.swp
