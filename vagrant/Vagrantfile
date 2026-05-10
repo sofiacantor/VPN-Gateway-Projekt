@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
     gw.vm.hostname = "gateway"
 
     # Internt nätverk - fast IP-adress 192.168.56.10
-    gw.vm.network "private_network", ip: "192.168.56.10"
+    gw.vm.network "private_network", ip: "192.168.56.10", virtualbox__intnet: "internal-net"
 
     # Port forwarding: WireGuard lyssnar pa UDP 51820
     # Windows-host skickar VPN-trafik till denna port
@@ -32,7 +32,7 @@ Vagrant.configure("2") do |config|
     int.vm.hostname = "internal"
 
     # Internt natverk - fast IP-adress 192.168.56.20
-    int.vm.network "private_network", ip: "192.168.56.20"
+    int.vm.network "private_network", ip: "192.168.56.20", virtualbox__intnet: "internal-net"
 
     int.vm.provider "virtualbox" do |vb|
       vb.name = "internal-service"

@@ -38,3 +38,16 @@ exit
 - **Privata nycklar får ALDRIG committas till Git**
 - `.gitignore` filtrerar bort `*.key` och `.conf` (utom `.template`)
 - Varje teammedlem genererar egna nyckelpar
+
+## Viktig konfigurationsdetalj: Två MASQUERADE-regler
+
+PostUp/PostDown maste innehalla MASQUERADE-regler for **bada** utgaende
+interface:
+- `enp0s3` — for ev. internet-trafik via NAT
+- `enp0s8` — for trafik mot 192.168.56.0/24 (interna natverket)
+
+Utan `enp0s8`-regeln NAT:as inte paketen pa vag till internal-VM, vilket
+gor att internal-VM ser klientens VPN-IP (10.0.0.2) som kalla — och 
+saknar route tillbaka. Resultat: ICMP-pingar timar ut.
+
+Detta upptacktes med `tcpdump` under felsokning.
