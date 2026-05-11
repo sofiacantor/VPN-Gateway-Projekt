@@ -1,0 +1,162 @@
+---
+# WireGuard role - installerar och konfigurerar VPN-gateway
+
+# ============================================
+# Variabler (kan flyttas till group_vars later)
+# ============================================
+- name: Sätt WireGuard-variabler
+  ansible.builtin.set_fact:
+    wg_server_address: "10.0.0.1/24"
+    wg_client_address: "10.0.0.2"
+    wg_listen_port: 51820
+    wg_internet_iface: "enp0s3"
+    wg_internal_iface: "enp0s8"
+    wg_config_dir: "/etc/wireguard"
+
+# ============================================
+# Steg 1: Installera WireGuard
+# ============================================
+- name: Uppdatera apt-cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Installera WireGuard
+  ansible.builtin.apt:
+    name: wireguard
+    state: present
+
+# ============================================
+# Steg 2: Säkerställ att /etc/wireguard finns med rätt rättigheter
+# ============================================
+- name: Skapa /etc/wireguard med rätt rättigheter
+  ansible.builtin.file:
+    path: "{{ wg_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0700'
+
+# ============================================
+# Steg 3: Generera nyckelpar (om de inte redan finns)
+# ============================================
+- name: Kontrollera om server-nyckel finns
+  ansible.builtin.stat:
+    path: "{{ wg_config_dir }}/server_private.key"
+  register: server_key_check
+
+- name: Generera server-nycklar
+  ansible.builtin.shell: |
+    wg genkey | tee {{ wg_config_dir }}/server_private.key | wg pubkey > {{ wg_config_dir }}/server_public.key
+    chmod 600 {{ wg_config_dir }}/server_private.key
+  when: not server_key_check.stat.exists
+
+- name: Kontrollera om klient-nyckel finns
+  ansible.builtin.stat:
+    path: "{{ wg_config_dir }}/client_private.key"
+  register: client_key_check
+
+- name: Generera klient-nycklar
+  ansible.builtin.shell: |
+    wg genkey | tee {{ wg_config_dir }}/client_private.key | wg pubkey > {{ wg_config_dir }}/client_public.key
+    chmod 600 {{ wg_config_dir }}/client_private.key
+  when: not client_key_check.stat.exists
+
+# ============================================
+# Steg 4: Läs in nycklarna som variabler
+# ============================================
+- name: Läs server private key
+  ansible.builtin.slurp:
+    src: "{{ wg_config_dir }}/server_private.key"
+  register: server_priv_slurp
+
+- name: Läs server public key
+  ansible.builtin.slurp:
+    src: "{{ wg_config_dir }}/server_public.key"
+  register: server_pub_slurp
+
+- name: Läs client private key
+  ansible.builtin.slurp:
+    src: "{{ wg_config_dir }}/client_private.key"
+  register: client_priv_slurp
+
+- name: Läs client public key
+  ansible.builtin.slurp:
+    src: "{{ wg_config_dir }}/client_public.key"
+  register: client_pub_slurp
+
+- name: Spara nycklar som fakta
+  ansible.builtin.set_fact:
+    server_private_key: "{{ server_priv_slurp.content | b64decode | trim }}"
+    server_public_key: "{{ server_pub_slurp.content | b64decode | trim }}"
+    client_private_key: "{{ client_priv_slurp.content | b64decode | trim }}"
+    client_public_key: "{{ client_pub_slurp.content | b64decode | trim }}"
+
+# ============================================
+# Steg 5: Aktivera IP forwarding
+# ============================================
+- name: Aktivera IP forwarding (runtime)
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: yes
+    sysctl_file: /etc/sysctl.conf
+
+# ============================================
+# Steg 6: Skapa wg0.conf från mall
+# ============================================
+- name: Generera wg0.conf från mall
+  ansible.builtin.template:
+    src: wg0.conf.j2
+    dest: "{{ wg_config_dir }}/wg0.conf"
+    owner: root
+    group: root
+    mode: '0600'
+  notify: restart wireguard
+
+# ============================================
+# Steg 7: Starta och aktivera WireGuard-tjänsten
+# ============================================
+- name: Starta och aktivera wg-quick@wg0
+  ansible.builtin.systemd:
+    name: wg-quick@wg0
+    state: started
+    enabled: yes
+
+# ============================================
+# Steg 8: Generera klient-konfiguration för Windows
+# ============================================
+- name: Skapa katalog för klient-config
+  ansible.builtin.file:
+    path: "{{ wg_config_dir }}/client"
+    state: directory
+    mode: '0700'
+
+- name: Generera client.conf
+  ansible.builtin.copy:
+    dest: "{{ wg_config_dir }}/client/client.conf"
+    mode: '0600'
+    content: |
+      [Interface]
+      PrivateKey = {{ client_private_key }}
+      Address = {{ wg_client_address }}/24
+
+      [Peer]
+      PublicKey = {{ server_public_key }}
+      Endpoint = 127.0.0.1:{{ wg_listen_port }}
+      AllowedIPs = 10.0.0.0/24, 192.168.56.0/24
+      PersistentKeepalive = 25
+
+- name: Visa instruktioner för klient-config
+  ansible.builtin.debug:
+    msg:
+      - "===================================================="
+      - "WireGuard är installerat och igång!"
+      - "Klient-konfiguration finns på gateway-VM:"
+      - "  {{ wg_config_dir }}/client/client.conf"
+      - "Hämta den med:"
+      - "  vagrant ssh gateway -c 'sudo cat /etc/wireguard/client/client.conf'"
+      - "Och spara på Windows som C:\\WireGuard-Client\\client.conf"
+      - "===================================================="
+      
