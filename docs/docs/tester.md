@@ -2,11 +2,11 @@
 
 Detta dokument samlar alla sakerhetsverifieringar for VPN-gateway-projektet.
 Syftet ar att bevisa att den interna tjansten (192.168.56.20) endast ar
-tillganglig via VPN och inte fran ovriga natverk.
+tillgänglig via VPN och inte fran ovriga natverk.
 
 ---
 
-## Test 1: Tillganglighet UTAN VPN
+## Test 1: Tillgänglighet UTAN VPN
 
 **Datum:** [2026-05-10]  
 **Testat av:** Sofia och Joséphine
