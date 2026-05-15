@@ -13,4 +13,3 @@
   become: yes
   roles:
     - nginx
-    

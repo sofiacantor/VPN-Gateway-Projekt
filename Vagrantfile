@@ -2,7 +2,6 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
-  # Använd Ubuntu 22.04 LTS - stabilt och välbeprövat
   config.vm.box = "ubuntu/jammy64"
 
   # ============================================
@@ -11,11 +10,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "gateway" do |gw|
     gw.vm.hostname = "gateway"
 
-    # Internt nätverk - fast IP-adress 192.168.56.10
     gw.vm.network "private_network", ip: "192.168.56.10", virtualbox__intnet: "internal-net"
-
-    # Port forwarding: WireGuard lyssnar pa UDP 51820
-    # Windows-host skickar VPN-trafik till denna port
     gw.vm.network "forwarded_port", guest: 51820, host: 51820, protocol: "udp"
 
     gw.vm.provider "virtualbox" do |vb|
@@ -23,21 +18,38 @@ Vagrant.configure("2") do |config|
       vb.memory = 1024
       vb.cpus = 1
     end
+
+    # Ansible provisionering - WireGuard
+    gw.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "ansible/site.yml"
+      ansible.limit = "gateway"
+      ansible.inventory_path = "ansible/inventory.ini"
+      ansible.compatibility_mode = "2.0"
+      ansible.install_mode = "default"
+    end
   end
 
   # ============================================
-  # VM 2: Intern tjanst (webbserver kommer hit)
+  # VM 2: Intern tjanst
   # ============================================
   config.vm.define "internal" do |int|
     int.vm.hostname = "internal"
 
-    # Internt natverk - fast IP-adress 192.168.56.20
     int.vm.network "private_network", ip: "192.168.56.20", virtualbox__intnet: "internal-net"
 
     int.vm.provider "virtualbox" do |vb|
       vb.name = "internal-service"
       vb.memory = 512
       vb.cpus = 1
+    end
+
+    # Ansible provisionering - nginx
+    int.vm.provision "ansible_local" do |ansible|
+      ansible.playbook = "ansible/site.yml"
+      ansible.limit = "internal"
+      ansible.inventory_path = "ansible/inventory.ini"
+      ansible.compatibility_mode = "2.0"
+      ansible.install_mode = "default"
     end
   end
 end
