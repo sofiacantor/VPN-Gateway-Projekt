@@ -1,0 +1,13 @@
+# WireGuard konfiguration genererad av Ansible
+
+[Interface]
+Address = {{ wg_server_address }}
+ListenPort = {{ wg_listen_port }}
+PrivateKey = {{ server_private_key }}
+
+PostUp   = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o {{ wg_internet_iface }} -j MASQUERADE; iptables -t nat -A POSTROUTING -o {{ wg_internal_iface }} -j MASQUERADE
+PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -D FORWARD -o wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o {{ wg_internet_iface }} -j MASQUERADE; iptables -t nat -D POSTROUTING -o {{ wg_internal_iface }} -j MASQUERADE
+
+[Peer]
+PublicKey = {{ client_public_key }}
+AllowedIPs = {{ wg_client_address }}/32

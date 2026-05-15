@@ -19,3 +19,7 @@ Thumbs.db
 # WireGuard - skydda riktiga konfigurationer
 wireguard/*.conf
 !wireguard/*.conf.template
+
+# Ansible-genererade filer som kan innehålla hemligheter
+ansible/**/client.conf
+ansible/**/*.key
