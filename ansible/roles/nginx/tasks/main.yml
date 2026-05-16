@@ -1,0 +1,38 @@
+---
+# Nginx role - installerar och konfigurerar intern webbserver
+
+- name: Säkerställ att tid är synkad
+  ansible.builtin.systemd:
+    name: systemd-timesyncd
+    state: started
+    enabled: yes
+
+- name: Uppdatera apt-cache
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Installera nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+
+- name: Kopiera anpassad index.html
+  ansible.builtin.copy:
+    src: index.html
+    dest: /var/www/html/index.html
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  notify: restart nginx
+
+- name: Säkerställ att nginx kör
+  ansible.builtin.systemd:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Vänta tills nginx svarar på port 80
+  ansible.builtin.wait_for:
+    port: 80
+    timeout: 30

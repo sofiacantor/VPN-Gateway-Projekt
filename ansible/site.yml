@@ -1,0 +1,15 @@
+---
+# Master playbook for VPN Gateway Projekt
+# Konfigurerar gateway-VM med WireGuard och internal-VM med nginx
+
+- name: Konfigurera VPN Gateway
+  hosts: gateway
+  become: yes
+  roles:
+    - wireguard
+
+- name: Konfigurera Intern Webbserver
+  hosts: internal
+  become: yes
+  roles:
+    - nginx
