@@ -117,6 +117,6 @@
 
       [Peer]
       PublicKey = {{ server_public_key }}
-      Endpoint = 192.168.56.10:{{ wg_listen_port }}
+      Endpoint = 127.0.0.1:{{ wg_listen_port }}
       AllowedIPs = 10.0.0.0/24, 192.168.56.0/24
       PersistentKeepalive = 25
