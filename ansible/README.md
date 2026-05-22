@@ -87,10 +87,10 @@ Definierar vilka maskiner som Ansible hanterar:
 
 ```ini
 [gateway]
-gateway ansible_connection=local
+gateway ansible_host=192.168.56.10 ansible_user=vagrant ansible_connection=local
 
 [internal]
-internal ansible_connection=local
+internal ansible_host=192.168.56.20 ansible_user=vagrant ansible_connection=local
 
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3

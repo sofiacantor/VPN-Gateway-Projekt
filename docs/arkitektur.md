@@ -143,18 +143,18 @@ Ansible-automation:
 
 ### Vad är skyddat?
 
-✅ **Tjänsten är osynlig utan VPN** — Windows har ingen route
-✅ **Trafik krypteras** mellan klient och gateway (WireGuard)
-✅ **Nycklar krävs** för anslutning — kan ej brute-forceas
-✅ **Nätverkssegmentering** — internt nät isolerat
-✅ **Defense in depth** — flera lager (intnet + iptables + WireGuard)
+**Tjänsten är osynlig utan VPN** — Windows har ingen route
+**Trafik krypteras** mellan klient och gateway (WireGuard)
+**Nycklar krävs** för anslutning — kan ej brute-forceas
+**Nätverkssegmentering** — internt nät isolerat
+**Defense in depth** — flera lager (intnet + iptables + WireGuard)
 
 ### Kvarvarande risker
 
-⚠️ **HTTP istället för HTTPS** — om någon kringgår VPN är trafiken okrypterad
-⚠️ **Privat nyckel på Windows** — om datorn komprometteras kan en angripare ansluta
-⚠️ **Single point of failure** — om gateway går ner är tjänsten otillgänglig
-⚠️ **Inga loggar/övervakning** — kan ej upptäcka attacker
+**HTTP istället för HTTPS** — om någon kringgår VPN är trafiken okrypterad
+**Privat nyckel på Windows** — om datorn komprometteras kan en angripare ansluta
+**Single point of failure** — om gateway går ner är tjänsten otillgänglig
+**Inga loggar/övervakning** — kan ej upptäcka attacker
 
 ### Förbättringar för produktion
 

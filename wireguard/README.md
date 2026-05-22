@@ -124,7 +124,7 @@ Hela installationen flyttades till Ansible-rollen `wireguard`. Vid `vagrant up` 
 
 ## Manuell konfiguration (referens)
 
-> ⚠️ **Detta är historisk dokumentation från Del 5.** I projektets nuvarande tillstånd sker installationen automatiskt via Ansible — se nästa sektion.
+>  **Detta är historisk dokumentation från manuella delen.** I projektets nuvarande tillstånd sker installationen automatiskt via Ansible — se nästa sektion.
 
 ### Steg 1: Logga in på gateway och bli root
 
@@ -342,7 +342,7 @@ Markera HELA outputen → kopiera.
 ### Spara på Windows
 
 ```powershell
-notepad C:\WireGuard-Client\client.conf
+code . C:\WireGuard-Client\client.conf
 ```
 
 Klistra in, spara.
@@ -363,7 +363,7 @@ Klistra in, spara.
 | `AllowedIPs` | `10.0.0.0/24, 192.168.56.0/24` | Vilka nät routas via VPN |
 | `PersistentKeepalive` | `25` | Förhindrar NAT-tabell timeout |
 
-> ⚠️ **Vanlig miss:** `Endpoint` ska vara `127.0.0.1:51820` (lokal port som forwardas), INTE `192.168.56.10:51820` (gatewayens interna IP — Windows saknar route dit).
+> **Vanlig miss:** `Endpoint` ska vara `127.0.0.1:51820` (lokal port som forwardas), INTE `192.168.56.10:51820` (gatewayens interna IP — Windows saknar route dit).
 
 ---
 

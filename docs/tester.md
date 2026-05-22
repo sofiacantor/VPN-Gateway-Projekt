@@ -1,8 +1,8 @@
 # Sakerhetstester - VPN Gateway
 
-Detta dokument samlar alla sakerhetsverifieringar for VPN-gateway-projektet.
-Syftet ar att bevisa att den interna tjansten (192.168.56.20) endast ar
-tillgänglig via VPN och inte fran ovriga natverk.
+Detta dokument samlar alla säkerhetsverifieringar för VPN-gateway-projektet.
+Syftet är att bevisa att den interna tjänsten (192.168.56.20) endast är
+tillgänglig via VPN och inte från övriga nätverk.
 
 ---
 
@@ -11,10 +11,10 @@ tillgänglig via VPN och inte fran ovriga natverk.
 **Datum:** [2026-05-10]  
 **Testat av:** Sofia och Joséphine
 
-### Forutsattningar
-- WireGuard-tunnel: **Inactive** (avstangd)
-- Windows-host pa vanligt natverk
-- Gateway och internal VMs kor
+### Forutsättningar
+- WireGuard-tunnel: **Inactive** (avstängd)
+- Windows-host pa vanligt nätverk
+- Gateway och internal VMs kör
 
 ### Test 1.1: Ping 192.168.56.20
 
@@ -23,18 +23,18 @@ tillgänglig via VPN och inte fran ovriga natverk.
 ping 192.168.56.20
 ```
 
-**Forvantat resultat:** 100% paketforlust (host onabar)  
-**Faktiskt resultat:** ✅ 100% paketforlust - Request timed out
+**Förväntat resultat:** 100% paketförlust (host onåbar)  
+**Faktiskt resultat:** ✅ 100% paketförlust - Request timed out
 
-**Skarmdump:** `screenshots/test1-utan-vpn-ping-fail.png`
+**Skärmdump:** `screenshots/test1-utan-vpn-ping-fail.png`
 
-### Test 1.2: Webblaesare
+### Test 1.2: Webbläsare
 
 **URL:** `http://192.168.56.20`  
-**Forvantat resultat:** Anslutning misslyckas  
+**Förvantat resultat:** Anslutning misslyckas  
 **Faktiskt resultat:** ✅ ERR_CONNECTION_TIMED_OUT
 
-**Skarmdump:** `screenshots/test2-utan-vpn-browser-fail.png`
+**Skärmdump:** `screenshots/test2-utan-vpn-browser-fail.png`
 
 ### Test 1.3: curl
 
@@ -43,15 +43,15 @@ ping 192.168.56.20
 curl http://192.168.56.20 --connect-timeout 5
 ```
 
-**Forvantat resultat:** Connection timeout  
+**Förvantat resultat:** Connection timeout  
 **Faktiskt resultat:** ✅ Failed to connect / timeout
 
-**Skarmdump:** `screenshots/test3-utan-vpn-curl-fail.png`
+**Skärmdump:** `screenshots/test3-utan-vpn-curl-fail.png`
 
 ### Slutsats Test 1
 
-Tjansten ar **INTE** tillganglig utan VPN. Detta bekraftar att internal-VM
-ar isolerad pa det privata natverket och endast kan nas via gatewayen.
+Tjänsten är **INTE** tillgänglig utan VPN. Detta bekräftar att internal-VM
+är isolerad på det privata nätverket och endast kan nås via gatewayen.
 
 ---
 
@@ -63,7 +63,7 @@ ar isolerad pa det privata natverket och endast kan nas via gatewayen.
 ### Forutsattningar
 - WireGuard-tunnel: **Active** (aktiverad)
 - Windows-host ansluten via VPN (10.0.0.2)
-- Gateway och internal VMs kor
+- Gateway och internal VMs kör
 
 ### Test 2.1: Ping 192.168.56.20
 
@@ -72,18 +72,18 @@ ar isolerad pa det privata natverket och endast kan nas via gatewayen.
 ping 192.168.56.20
 ```
 
-**Forvantat resultat:** Reply fran 192.168.56.20  
-**Faktiskt resultat:** ✅ Paket gar igenom (ca 5ms latency)
+**Förvantat resultat:** Reply fran 192.168.56.20  
+**Faktiskt resultat:** ✅ Paket går igenom (ca 5ms latency)
 
-**Skarmdump:** `screenshots/test1-med-vpn-ping-ok.png`
+**Skärmdump:** `screenshots/test1-med-vpn-ping-ok.png`
 
-### Test 2.2: Webblaesare
+### Test 2.2: Webbläsare
 
 **URL:** `http://192.168.56.20`  
-**Forvantat resultat:** Webbsidan laddas  
-**Faktiskt resultat:** ✅ Sidan "Intern Tjanst" visas korrekt
+**Förvantat resultat:** Webbsidan laddas  
+**Faktiskt resultat:** ✅ Sidan "Intern Tjänst" visas korrekt
 
-**Skarmdump:** `screenshots/test2-med-vpn-browser-ok.png`
+**Skärmdump:** `screenshots/test2-med-vpn-browser-ok.png`
 
 ### Test 2.3: curl
 
@@ -92,15 +92,15 @@ ping 192.168.56.20
 curl http://192.168.56.20
 ```
 
-**Forvantat resultat:** HTML-respons  
+**Förvantat resultat:** HTML-respons  
 **Faktiskt resultat:** ✅ Komplett HTML returneras
 
-**Skarmdump:** `screenshots/test3-med-vpn-curl-ok.png`
+**Skärmdump:** `screenshots/test3-med-vpn-curl-ok.png`
 
 ### Slutsats Test 2
 
-Tjansten ar tillganglig nar VPN ar aktivt. VPN-tunneln routar trafik
-korrekt fran Windows-host till internal-VM via gatewayen.
+Tjänsten är tillgänglig när VPN är aktivt. VPN-tunneln routar trafik
+korrekt från Windows-host till internal-VM via gatewayen.
 
 ---
 
@@ -112,49 +112,49 @@ korrekt fran Windows-host till internal-VM via gatewayen.
 | http://192.168.56.20 | ❌ Refused | ✅ Sida laddas |
 | curl http://192.168.56.20 | ❌ Failed | ✅ HTML |
 
-**Slutsats:** Sakerhetsmodellen fungerar som tankt.
+**Slutsats:** Säkerhetsmodellen fungerar som tänkt.
 
-- **Utan VPN:** Tjansten ar isolerad och onabar
-- **Med VPN:** Tjansten ar tillganglig for autentiserade VPN-anvandare
+- **Utan VPN:** Tjänsten är isolerad och onårbar
+- **Med VPN:** Tjänsten är tillgänglig for autentiserade VPN-användare
 
 ---
 
-## Sakerhetsforbattring: Natverksisolering
+## Säkerhetsforbättring: Nätverksisolering
 
 **Datum:** [2026-05-10]  
-**Genomfort av:** Sofia och Joséphine
+**Genomfört av:** Sofia och Joséphine
 
 ### Bakgrund
 
-Vid initial uppsattning anvandes `private_network` (host-only) i Vagrantfile.
+Vid initial uppsättning användes `private_network` (host-only) i Vagrantfile.
 Detta gjorde att Windows-host hade direkt access till 192.168.56.0/24 via en
-VirtualBox host-only-adapter, vilket gjorde VPN:n meningslos for sakerhet.
+VirtualBox host-only-adapter, vilket gjorde VPN:n meningslös for säkerhet.
 
-### Atgard
+### Åtgärd
 
-Andrade Vagrantfile till `virtualbox__intnet: "internal-net"` for bada VMs.
-Detta gor natverket till en **akta** intern VirtualBox-natverk som ar isolerat
+Ändrade Vagrantfile till `virtualbox__intnet: "internal-net"` for båda VMs.
+Detta gör nätverket till en **äkta** intern VirtualBox-natverk som är isolerat
 fran Windows-host.
 
 ### Resultat
 
-- **Innan:** Windows kunde pinga 192.168.56.20 utan VPN (sakerhetshal)
-- **Efter:** Windows kan ENDAST pinga 192.168.56.20 nar VPN ar aktivt
+- **Innan:** Windows kunde pinga 192.168.56.20 utan VPN (säkerhetshål)
+- **Efter:** Windows kan ENDAST pinga 192.168.56.20 när VPN är aktivt
 
-Detta gor att VPN nu ar **enda vagen in** till det interna natverket.
+Detta gör att VPN nu är **enda vägen in** till det interna nätverket.
 
 ---
 
-## Felsokningsanteckning: NAT-konfiguration
+## Felsökningsanteckning: NAT-konfiguration
 
 **Datum:** [2026-05-10]  
-**Genomfort av:** Sofia och Joséphine
+**Genomfört av:** Sofia och Joséphine
 
 ### Problem
 
-Efter natverksisolering med `intnet` kunde Windows-host inte na 192.168.56.20
-trots aktiv VPN. Felsokning med `tcpdump` pa gateway visade att ICMP-paket
-kom in pa wg0 och gick ut pa enp0s8 — men inga svar kom tillbaka.
+Efter nätverksisolering med `intnet` kunde Windows-host inte nå 192.168.56.20
+trots aktiv VPN. Felsokning med `tcpdump` på gateway visade att ICMP-paket
+kom in på wg0 och gick ut på enp0s8 — men inga svar kom tillbaka.
 
 ### Diagnos
 
@@ -163,7 +163,7 @@ trafik via enp0s3 (internet). Trafik via enp0s8 (interna natet) NAT:ades
 inte. Detta gjorde att internal-VM sag klientens VPN-IP (10.0.0.2) som
 kalla, och saknade route tillbaka.
 
-### Atgard
+### Åtgard
 
 Lagt till en andra MASQUERADE-regel for enp0s8 i PostUp/PostDown:
 
@@ -173,8 +173,8 @@ PostUp = iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE; iptables -t nat
 
 ### Verifiering
 
-Efter andring:
+Efter ändring:
 
-- `ping 192.168.56.20` fran Windows: ✅ Reply
-- `curl http://192.168.56.20` fran Windows: ✅ HTML-respons
-- Webblaesare visar tjansten korrekt
+- `ping 192.168.56.20` fran Windows: Reply
+- `curl http://192.168.56.20` fran Windows: HTML-respons
+- Webbläsare visar tjänsten korrekt

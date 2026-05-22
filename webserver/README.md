@@ -85,23 +85,23 @@ HTML-svar tillbaka samma väg
 
 Webbservern har konfigurerats på **två sätt** under projektets utveckling:
 
-### Fas 1: Manuell konfiguration (Del 6)
+### Fas 1: Manuell konfiguration
 
 Initialt installerades nginx manuellt på `internal-VM` för att verifiera konceptet och förstå alla steg. Dokumenteras nedan för pedagogisk referens.
 
-### Fas 2: Automatiserad konfiguration (Del 9)
+### Fas 2: Automatiserad konfiguration
 
 Hela installationen flyttades till Ansible-rollen `nginx`. Filerna i denna mapp (`index.html`, `illustration.png`) **kopieras till** Ansible-rollens `files/`-mapp och distribueras automatiskt vid `vagrant up`.
 
 **Sökväg i Ansible:** [`../ansible/roles/nginx/files/`](../ansible/roles/nginx/files/)
 
-> 💡 Källfilerna behålls här i `webserver/`-mappen som "original" för referens och eventuell vidareutveckling.
+> Källfilerna behålls här i `webserver/`-mappen som "original" för referens och eventuell vidareutveckling.
 
 ---
 
 ## Manuell installation (referens)
 
-> ⚠️ **Detta är historisk dokumentation.** I projektets nuvarande tillstånd sker installationen automatiskt via Ansible — se nästa sektion.
+> **Detta är historisk dokumentation.** I projektets nuvarande tillstånd sker installationen automatiskt via Ansible — se nästa sektion.
 
 För att förstå vad Ansible-rollen gör, kan dessa manuella steg utföras:
 
@@ -257,9 +257,9 @@ Webbservern är **inte säker i sig själv** — den kör vanlig okrypterad HTTP
 
 ### Kvarvarande risker
 
-- ⚠️ **HTTP istället för HTTPS** — trafik mellan VPN-klient och webbserver är okrypterad inuti tunneln
-- ⚠️ **Ingen autentisering på webbservern** — vem som helst med VPN-åtkomst ser sidan
-- ⚠️ **nginx-version inte härdad** — använder default-konfiguration
+- **HTTP istället för HTTPS** — trafik mellan VPN-klient och webbserver är okrypterad inuti tunneln
+- **Ingen autentisering på webbservern** — vem som helst med VPN-åtkomst ser sidan
+- **nginx-version inte härdad** — använder default-konfiguration
 
 **Förbättringar för produktion:**
 
